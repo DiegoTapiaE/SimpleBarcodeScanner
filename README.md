@@ -2,17 +2,17 @@
 This project is a simple barcode scanner that uses a web camera (or mobile camera) to detect barcodes. It leverages the ZXing library to scan various barcode formats using the device's camera. This app works on modern browsers for desktop and mobile devices.
 ## Table of Contents
 1. [Features](#Features "Features")
-3. [How It Works](#How_It_Works "How It Works")
-4. [Supported Barcode Formats](#Supported_Barcode_Formats "Supported Barcode Formats")
-	- [Limiting to Specific Barcode Formats](#Limiting_to_Specific_Barcode_Formats "Limiting to Specific Barcode Formats")
-6. [Getting Started](#Getting_Started "Getting Started")
+3. [How It Works](#How-It-Works "How It Works")
+4. [Supported Barcode Formats](#Supported-Barcode-Formats "Supported Barcode Formats")
+	- [Limiting to Specific Barcode Formats](#Limiting-to-Specific-Barcode-Formats "Limiting to Specific Barcode Formats")
+6. [Getting Started](#Getting-Started "Getting Started")
 	- [Prerequisites](#Prerequisites "Prerequisites")
 	- [Installation](#Installation "Installation")
 	- [Usage](#Usage "Usage")
 10. [Customization](#Customization "Customization")
 11. [Considerations](#Considerations "Considerations")
-	- [HTTPS Requirement](#HTTPS_Requirement "HTTPS Requirement")
-	- [Using ngrok for Testing](#Using_ngrok_for_Testing "Using ngrok for Testing")
+	- [HTTPS Requirement](#HTTPS-Requirement "HTTPS Requirement")
+	- [Using ngrok for Testing](#Using-ngrok-for-Testing "Using ngrok for Testing")
 14. [Contributing](#Contributing "Contributing")
 15. [License](#License "License")
 
