@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner</title>
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        video {
+            border: 1px solid black;
+            max-width: 100%;
+            height: auto;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Barcode Scanner</h1>
+    <video id="preview" width="300" height="200" autoplay playsinline></video>
+    <p>Detected Barcode: <span id="barcodeResult">None</span></p>
+    <button id="startButton">Start Scanning</button>
+    <button id="stopButton" style="display: none;">Stop Scanning</button>
+    <h2>Scanned Barcodes:</h2>
+    <ul id="barcodeList"></ul>
+
+    <script>
+        const video = document.getElementById('preview');
+        const barcodeResult = document.getElementById('barcodeResult');
+        const barcodeList = document.getElementById('barcodeList');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+
+        let codeReader;
+        let isScanning = false;
+
+        // Function to initialize the camera for scanning
+        async function initCamera() {
+            // Check if mediaDevices API is supported
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.error("Camera API not supported by this browser.");
+                return;
+            }
+
+            // Try to access the camera with 'environment' mode (back camera)
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' }
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Error accessing camera: ", err);
+            }
+        }
+
+        // Function to start scanning for barcodes
+        function startScanning() {
+            if (!codeReader) {
+                // Initialize ZXing barcode reader for continuous barcode detection
+                codeReader = new ZXing.BrowserBarcodeReader();
+            }
+
+            codeReader.decodeFromVideoElementContinuously(video, (result, err) => {
+                if (result && !isScanning) {
+                    // Handle the detected barcode
+                    handleBarcodeDetection(result.text);
+                } else if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error("Error detecting barcode: ", err);
+                }
+            });
+        }
+
+        // Function to stop scanning for barcodes
+        function stopScanning() {
+            if (codeReader) {
+                codeReader.reset();
+            }
+        }
+
+        // Function to handle barcode detection
+        function handleBarcodeDetection(barcode) {
+            isScanning = true;
+            setTimeout(() => { isScanning = false; }, 1500); // Add a delay between detections
+            barcodeResult.textContent = barcode;
+            const li = document.createElement('li');
+            li.textContent = barcode;
+            barcodeList.appendChild(li);
+
+            // Vibrate the device when a barcode is detected (200ms vibration)
+            if (navigator.vibrate) {
+                navigator.vibrate([200]);
+            }
+        }
+
+        // Function to toggle between start and stop buttons
+        function toggleButtons(showStart) {
+            startButton.style.display = showStart ? 'inline' : 'none';
+            stopButton.style.display = showStart ? 'none' : 'inline';
+        }
+
+        // Event listener to start scanning when the "Start Scanning" button is clicked
+        startButton.addEventListener('click', async () => {
+            toggleButtons(false);  // Show "Stop Scanning" button
+            await initCamera();     // Initialize the camera
+            startScanning();        // Start barcode detection
+        });
+
+        // Event listener to stop scanning when the "Stop Scanning" button is clicked
+        stopButton.addEventListener('click', () => {
+            toggleButtons(true);  // Show "Start Scanning" button
+            stopScanning();       // Stop barcode detection
+
+            // Stop the camera stream
+            const stream = video.srcObject;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            video.srcObject = null; // Clear video element
+        });
+    </script>
+</body>
+
+</html>
